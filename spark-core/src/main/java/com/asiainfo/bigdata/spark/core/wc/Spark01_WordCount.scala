@@ -8,14 +8,15 @@ object Spark01_WordCount {
     val sparkConf = new SparkConf().setMaster("local").setAppName("WordCount")
     val sc: SparkContext = new SparkContext(sparkConf)
     val lines: RDD[String] = sc.textFile("data")
-    val words = lines.flatMap(_.split(" "))
-    val wordGroup = words.groupBy(x => x)
-    val value = wordGroup.map {
-      case (str, strings) => {
-        (str, strings.size)
-      }
-    }
-    value.foreach(x =>println(x))
+    val words = lines.flatMap(_.split(" ")).map(x => (x, 1))
+    //    val wordGroup = words.groupBy(x => x)
+    //    val value = wordGroup.map {
+    //      case (str, strings) => {
+    //        (str, strings.size)
+    //      }
+    //    }
+    val value: RDD[(String, Int)] = words.reduceByKey(_ + _);
+    value.foreach(x => println(x))
 
     sc.stop()
   }
